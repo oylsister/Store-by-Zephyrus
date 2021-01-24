@@ -4,6 +4,7 @@
 
 #include <store>
 #include <zephstocks>
+#include <hitboxchanger>
 
 new GAME_TF2 = false;
 #endif
@@ -31,6 +32,7 @@ new g_cvarSkinForceChange = -1;
 new g_cvarSkinForceChangeCT = -1;
 new g_cvarSkinForceChangeT = -1;
 new g_cvarSkinDelay = -1;
+new g_cvarSkinZEHitBox = -1;
 
 new bool:g_bTForcedSkin = false;
 new bool:g_bCTForcedSkin = false;
@@ -59,6 +61,7 @@ public PlayerSkins_OnPluginStart()
 	g_cvarSkinForceChangeCT = RegisterConVar("sm_store_playerskin_default_ct", "", "Path of the default CT skin.", TYPE_STRING);
 	g_cvarSkinForceChangeT = RegisterConVar("sm_store_playerskin_default_t", "", "Path of the default T skin.", TYPE_STRING);
 	g_cvarSkinDelay = RegisterConVar("sm_store_playerskin_delay", "-1", "Delay after spawn before applying the skin. -1 means no delay", TYPE_FLOAT);
+	g_cvarSkinZEHitBox = RegisterConVar("sm_store_removehitbox_ze", "0", "Enable Remove hit box for human in Zombie Escape gamemode", TYPE_INT);
 	
 	HookEvent("player_spawn", PlayerSkins_PlayerSpawn);
 	HookEvent("player_death", PlayerSkins_PlayerDeath);
@@ -79,6 +82,12 @@ public PlayerSkins_OnMapStart()
 	for(new i=0;i<g_iPlayerSkins;++i)
 	{
 		g_ePlayerSkins[i][PlayerSkinnModelIndex] = PrecacheModel2(g_ePlayerSkins[i][PlayerSkinModel], true);
+		if (g_eCvars[g_cvarSkinZEHitBox][aCache])
+		{
+			if (g_ePlayerSkins[i][PlayerSkiniTeam] == 3)
+				SetNumHitboxes(g_ePlayerSkins[i][PlayerSkinModel], -1);
+		}				
+
 		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][PlayerSkinModel]);
 
 		if(g_ePlayerSkins[i][PlayerSkinArms][0]!=0)
