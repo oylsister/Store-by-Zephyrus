@@ -7,4 +7,4 @@ From the previous time the plugin is uncompileable on the latest stable sourcemo
 
 I recommand you to get all latest version of includes files by yourself first. because it has been outdated at least 4 years. but I might just put it later
 
-Credits to Zephyrus 
+Credits to Zephyrus and Kxnrl https://github.com/Kxnrl/Store  
