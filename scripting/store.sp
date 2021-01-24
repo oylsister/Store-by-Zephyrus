@@ -7,7 +7,7 @@
 #define PLUGIN_NAME "Store - The Resurrection"
 #define PLUGIN_AUTHOR "Zephyrus, Updated by Oylsister"
 #define PLUGIN_DESCRIPTION "A completely new Store system."
-#define PLUGIN_VERSION "1.3"
+#define PLUGIN_VERSION "1.3.1"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -883,12 +883,12 @@ public Native_ShouldConfirm(Handle:plugin, numParams)
 
 public Native_GetItem(Handle:plugin, numParams)
 {
-	SetNativeArray(2, _:g_eItems[GetNativeCell(1)], sizeof(g_eItems[])); 
+	SetNativeArray(2, view_as<int>(g_eItems[GetNativeCell(1)]), sizeof(g_eItems[])); 
 }
 
 public Native_GetHandler(Handle:plugin, numParams)
 {
-	SetNativeArray(2, _:g_eTypeHandlers[GetNativeCell(1)], sizeof(g_eTypeHandlers[])); 
+	SetNativeArray(2, view_as<int>(g_eTypeHandlers[GetNativeCell(1)]), sizeof(g_eTypeHandlers[])); 
 }
 
 public Native_GetClientItem(Handle:plugin, numParams)
@@ -900,7 +900,7 @@ public Native_GetClientItem(Handle:plugin, numParams)
 	if(uid<0)
 		return 0;
 
-	SetNativeArray(3, _:g_eClientItems[client][uid], sizeof(g_eClientItems[][])); 
+	SetNativeArray(3, view_as<int>(g_eClientItems[client][uid]), sizeof(g_eClientItems[][])); 
 
 	return 1;
 }
@@ -2065,12 +2065,16 @@ public MenuHandler_Confirm(Handle:menu, MenuAction:action, client, param2)
 		{
 			decl String:m_szCallback[32];
 			decl String:m_szData[11];
+			decl String:m_szFile[64];
 			GetMenuItem(menu, 0, STRING(m_szCallback));
 			GetMenuItem(menu, 1, STRING(m_szData));
-			new m_iPos = FindCharInString(m_szCallback, '.');
-			m_szCallback[m_iPos] = 0;
+			DataPack pack = view_as<DataPack>(StringToInt(m_szCallback));
+			//new m_iPos = FindCharInString(m_szCallback, '.');
+			//m_szCallback[m_iPos] = 0;
 			new Handle:m_hPlugin = Handle:StringToInt(m_szCallback);
-			new Function:fnMenuCallback = view_as<Function>(StringToInt(m_szCallback[m_iPos+1]));
+			Function fnMenuCallback = pack.ReadFunction();
+			pack.ReadString(m_szFile, 64);
+			delete pack;
 			if(fnMenuCallback != INVALID_FUNCTION)
 			{
 				Call_StartFunction(m_hPlugin, fnMenuCallback);
