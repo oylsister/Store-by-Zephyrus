@@ -8,11 +8,11 @@
 
 enum Glow
 {
-	String:szColor[16],
-	String:szBrightness[8],
-	String:szStyle[4],
-	Float:flRadius,
-	Float:flDistance
+	String:GlowColor[16],
+	String:GlowBrightness[8],
+	String:GlowStyle[4],
+	Float:GlowflRadius,
+	Float:GlowflDistance
 }
 
 new g_eGlow[STORE_MAX_ITEMS][Glow];
@@ -46,11 +46,11 @@ public Glow_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iGlow);
 	
-	KvGetString(kv, "color", g_eGlow[g_iGlow][szColor], 16);
-	KvGetString(kv, "brightness", g_eGlow[g_iGlow][szBrightness], 8, "5");
-	KvGetString(kv, "style", g_eGlow[g_iGlow][szStyle], 4, "0");
-	g_eGlow[g_iGlow][flDistance]=KvGetFloat(kv, "distance", 200.0);
-	g_eGlow[g_iGlow][flRadius]=KvGetFloat(kv, "distance", 100.0);
+	KvGetString(kv, "color", g_eGlow[g_iGlow][GlowColor], 16);
+	KvGetString(kv, "brightness", g_eGlow[g_iGlow][GlowBrightness], 8, "5");
+	KvGetString(kv, "style", g_eGlow[g_iGlow][GlowStyle], 4, "0");
+	g_eGlow[g_iGlow][GlowflDistance]=KvGetFloat(kv, "distance", 200.0);
+	g_eGlow[g_iGlow][GlowflRadius]=KvGetFloat(kv, "distance", 100.0);
 	
 	++g_iGlow;
 	return true;
@@ -143,11 +143,11 @@ public CreateGlow(client)
 		GetClientAbsOrigin(client, m_flClientOrigin);
 		m_flClientOrigin[2]+=5.0;
 
-		DispatchKeyValue(m_unEnt, "_light", g_eGlow[m_iData][szColor]); 
-		DispatchKeyValue(m_unEnt, "brightness", g_eGlow[m_iData][szBrightness]); 
-		DispatchKeyValueFloat(m_unEnt, "spotlight_radius", g_eGlow[m_iData][flRadius]); 
-		DispatchKeyValueFloat(m_unEnt, "distance", g_eGlow[m_iData][flDistance]); 
-		DispatchKeyValue(m_unEnt, "style", g_eGlow[m_iData][szStyle]);  
+		DispatchKeyValue(m_unEnt, "_light", g_eGlow[m_iData][GlowColor]); 
+		DispatchKeyValue(m_unEnt, "brightness", g_eGlow[m_iData][GlowBrightness]); 
+		DispatchKeyValueFloat(m_unEnt, "spotlight_radius", g_eGlow[m_iData][GlowflRadius]); 
+		DispatchKeyValueFloat(m_unEnt, "distance", g_eGlow[m_iData][GlowflDistance]); 
+		DispatchKeyValue(m_unEnt, "style", g_eGlow[m_iData][GlowStyle]);  
 
 		DispatchSpawn(m_unEnt); 
 		TeleportEntity(m_unEnt, m_flClientOrigin, NULL_VECTOR, NULL_VECTOR); 

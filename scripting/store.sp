@@ -657,7 +657,7 @@ public OnMapStart()
 	{
 		if(g_eTypeHandlers[i][fnMapStart] != INVALID_FUNCTION)
 		{
-			Call_StartFunction(g_eTypeHandlers[i][MenuhPlugin], g_eTypeHandlers[i][fnMapStart]);
+			Call_StartFunction(g_eTypeHandlers[i][hPlugin], g_eTypeHandlers[i][fnMapStart]);
 			Call_Finish();
 		}
 	}
@@ -722,7 +722,7 @@ public Native_RegisterHandler(Handle:plugin, numParams)
 	else
 		++g_iTypeHandlers;
 	
-	g_eTypeHandlers[m_iId][MenuhPlugin] = plugin;
+	g_eTypeHandlers[m_iId][hPlugin] = plugin;
 	g_eTypeHandlers[m_iId][fnMapStart] = GetNativeCell(3);
 	g_eTypeHandlers[m_iId][fnReset] = GetNativeCell(4);
 	g_eTypeHandlers[m_iId][fnConfig] = GetNativeCell(5);
@@ -932,7 +932,7 @@ public Native_RemoveItem(Handle:plugin, numParams)
 	new itemid = GetNativeCell(2);
 	if(itemid>0 && g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnRemove] != INVALID_FUNCTION)
 	{
-		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][MenuhPlugin], g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnRemove]);
+		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][hPlugin], g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnRemove]);
 		Call_PushCell(client);
 		Call_PushCell(itemid);
 		Call_Finish();
@@ -1629,7 +1629,7 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 				if(g_iSelectedPlan[client]==-1)
 					m_iPrice = g_eItems[g_iSelectedItem[client]][Store_ItemiPrice];
 				else
-					m_iPrice = g_ePlans[g_iSelectedItem[client]][g_iSelectedPlan[client]][PlanPrice];
+					m_iPrice = g_ePlans[g_iSelectedItem[client]][g_iSelectedPlan[client]][ItmPlan_iPrice];
 
 				if(g_eClients[target][ClientCredits]>=m_iPrice && !Store_HasClientItem(target, g_iSelectedItem[client]))
 					Store_BuyItem(target, g_iSelectedItem[client], g_iSelectedPlan[client]);
@@ -1721,7 +1721,7 @@ public MenuHandler_Store(Handle:menu, MenuAction:action, client, param2)
 					{
 						if(g_eTypeHandlers[g_eItems[m_iId][Store_ItemiHandler]][bRaw])
 						{
-							Call_StartFunction(g_eTypeHandlers[g_eItems[m_iId][Store_ItemiHandler]][MenuhPlugin], g_eTypeHandlers[g_eItems[m_iId][Store_ItemiHandler]][fnUse]);
+							Call_StartFunction(g_eTypeHandlers[g_eItems[m_iId][Store_ItemiHandler]][hPlugin], g_eTypeHandlers[g_eItems[m_iId][Store_ItemiHandler]][fnUse]);
 							Call_PushCell(target);
 							Call_PushCell(m_iId);
 							Call_Finish();
@@ -1832,7 +1832,7 @@ public DisplayPlanMenu(client, itemid)
 	
 	for(new i=0;i<g_eItems[itemid][Store_ItemiPlans];++i)
 	{
-		AddMenuItemEx(m_hMenu, (g_eClients[target][ClientCredits] >= g_ePlans[itemid][i][PlanPrice] ? ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), "", "%t",  "Item Available", g_ePlans[itemid][i][PlanName], g_ePlans[itemid][i][PlanPrice]);
+		AddMenuItemEx(m_hMenu, (g_eClients[target][ClientCredits] >= g_ePlans[itemid][i][ItmPlan_iPrice] ? ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED), "", "%t",  "Item Available", g_ePlans[itemid][i][ItmPlan_szName], g_ePlans[itemid][i][ItmPlan_iPrice]);
 	}
 	
 	DisplayMenu(m_hMenu, client, 0);
@@ -2521,7 +2521,7 @@ public SQLCallback_ReloadConfig(Handle:owner, Handle:hndl, const String:error[],
 				m_bSuccess = true;
 				if(g_eTypeHandlers[m_iHandler][fnConfig]!=INVALID_FUNCTION)
 				{
-					Call_StartFunction(g_eTypeHandlers[m_iHandler][MenuhPlugin], g_eTypeHandlers[m_iHandler][fnConfig]);
+					Call_StartFunction(g_eTypeHandlers[m_iHandler][hPlugin], g_eTypeHandlers[m_iHandler][fnConfig]);
 					Call_PushCellRef(m_hKV);
 					Call_PushCell(g_iItems);
 					Call_Finish(m_bSuccess); 
@@ -2707,7 +2707,7 @@ Store_BuyItem(client, itemid, plan=-1)
 	if(plan==-1)
 		m_iPrice = g_eItems[itemid][Store_ItemiPrice];
 	else
-		m_iPrice = g_ePlans[itemid][plan][PlanPrice];	
+		m_iPrice = g_ePlans[itemid][plan][ItmPlan_iPrice];	
 
 	if(g_eClients[client][ClientCredits]<m_iPrice)
 		return;
@@ -2716,7 +2716,7 @@ Store_BuyItem(client, itemid, plan=-1)
 	g_eClientItems[client][m_iId][Client_ItemiId] = -1;
 	g_eClientItems[client][m_iId][Client_ItemiUniqueId] = itemid;
 	g_eClientItems[client][m_iId][Client_ItemiDateOfPurchase] = GetTime();
-	g_eClientItems[client][m_iId][Client_ItemiDateOfExpiration] = (plan==-1?0:(g_ePlans[itemid][plan][PlanTime]?GetTime()+g_ePlans[itemid][plan][PlanTime]:0));
+	g_eClientItems[client][m_iId][Client_ItemiDateOfExpiration] = (plan ==- 1 ? 0:(g_ePlans[itemid][plan][ItmPlan_iTime]?GetTime()+g_ePlans[itemid][plan][ItmPlan_iTime]:0));
 	g_eClientItems[client][m_iId][Client_ItemiPriceOfPurchase] = m_iPrice;
 	g_eClientItems[client][m_iId][Client_ItembSynced] = false;
 	g_eClientItems[client][m_iId][Client_ItembDeleted] = false;
@@ -2848,7 +2848,7 @@ public Store_ReloadConfig()
 	{
 		if(g_eTypeHandlers[i][fnReset] != INVALID_FUNCTION)
 		{
-			Call_StartFunction(g_eTypeHandlers[i][MenuhPlugin], g_eTypeHandlers[i][fnReset]);
+			Call_StartFunction(g_eTypeHandlers[i][hPlugin], g_eTypeHandlers[i][fnReset]);
 			Call_Finish();
 		}
 	}
@@ -2945,9 +2945,9 @@ Store_WalkConfig(&Handle:kv, parent=-1)
 				new index=0;
 				do
 				{
-					KvGetSectionName(kv, g_ePlans[g_iItems][index][PlanName], ITEM_NAME_LENGTH);
-					g_ePlans[g_iItems][index][PlanPrice] = KvGetNum(kv, "price");
-					g_ePlans[g_iItems][index][PlanTime] = KvGetNum(kv, "time");
+					KvGetSectionName(kv, g_ePlans[g_iItems][index][ItmPlan_szName], ITEM_NAME_LENGTH);
+					g_ePlans[g_iItems][index][ItmPlan_iPrice] = KvGetNum(kv, "price");
+					g_ePlans[g_iItems][index][ItmPlan_iTime] = KvGetNum(kv, "time");
 					++index;
 				} while (KvGotoNextKey(kv));
 
@@ -2983,7 +2983,7 @@ Store_WalkConfig(&Handle:kv, parent=-1)
 			m_bSuccess = true;
 			if(g_eTypeHandlers[m_iHandler][fnConfig]!=INVALID_FUNCTION)
 			{
-				Call_StartFunction(g_eTypeHandlers[m_iHandler][MenuhPlugin], g_eTypeHandlers[m_iHandler][fnConfig]);
+				Call_StartFunction(g_eTypeHandlers[m_iHandler][hPlugin], g_eTypeHandlers[m_iHandler][fnConfig]);
 				Call_PushCellRef(kv);
 				Call_PushCell(g_iItems);
 				Call_Finish(m_bSuccess); 
@@ -3037,7 +3037,7 @@ Store_UseItem(client, itemid, bool:synced=false, slot=0)
 	if(g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnUse] != INVALID_FUNCTION)
 	{
 		new m_iReturn = -1;
-		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][MenuhPlugin], g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnUse]);
+		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][hPlugin], g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnUse]);
 		Call_PushCell(client);
 		Call_PushCell(itemid);
 		Call_Finish(m_iReturn);
@@ -3065,7 +3065,7 @@ Store_UnequipItem(client, itemid, bool:fn=true)
 	new m_iSlot = 0;
 	if(fn && itemid > 0 && g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnRemove] != INVALID_FUNCTION)
 	{
-		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][MenuhPlugin], g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnRemove]);
+		Call_StartFunction(g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][hPlugin], g_eTypeHandlers[g_eItems[itemid][Store_ItemiHandler]][fnRemove]);
 		Call_PushCell(client);
 		Call_PushCell(itemid);
 		Call_Finish(m_iSlot);
@@ -3140,11 +3140,11 @@ Store_GetLowestPrice(itemid)
 	if(g_eItems[itemid][Store_ItemiPlans]==0)
 		return g_eItems[itemid][Store_ItemiPrice];
 
-	new m_iLowest=g_ePlans[itemid][0][PlanPrice];
+	new m_iLowest=g_ePlans[itemid][0][ItmPlan_iPrice];
 	for(new i=1;i<g_eItems[itemid][Store_ItemiPlans];++i)
 	{
-		if(m_iLowest>g_ePlans[itemid][i][PlanPrice])
-			m_iLowest = g_ePlans[itemid][i][PlanPrice];
+		if(m_iLowest>g_ePlans[itemid][i][ItmPlan_iPrice])
+			m_iLowest = g_ePlans[itemid][i][ItmPlan_iPrice];
 	}
 	return m_iLowest;
 }

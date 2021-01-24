@@ -14,26 +14,26 @@ new g_cvarChatTag = -1;
 
 enum Item_Plan
 {
-	String:szName[ITEM_NAME_LENGTH],
-	iPrice,
-	iTime
+	String:ItmPlan_szName[ITEM_NAME_LENGTH],
+	ItmPlan_iPrice,
+	ItmPlan_iTime
 }
 
 enum Store_Item
 {
-	String:szName[ITEM_NAME_LENGTH],
-	String:szUniqueId[PLATFORM_MAX_PATH],
-	String:szShortcut[64],
-	iId,
-	iPrice,
-	iParent,
-	iHandler,
-	iFlagBits,
-	iData,
-	iPlans,
-	bool:bBuyable,
-	bool:bIgnoreVIP,
-	Handle:hAttributes
+	String:Store_ItemName[ITEM_NAME_LENGTH],
+	String:Store_ItemUniqueId[PLATFORM_MAX_PATH],
+	String:Store_ItemShortcut[64],
+	Store_ItemiId,
+	Store_ItemiPrice,
+	Store_ItemiParent,
+	Store_ItemiHandler,
+	Store_ItemiFlagBits,
+	Store_ItemiData,
+	Store_ItemiPlans,
+	bool:Store_ItembBuyable,
+	bool:Store_ItembIgnoreVIP,
+	Handle:Store_ItemhAttributes
 }
 
 enum Type_Handler
@@ -52,13 +52,13 @@ enum Type_Handler
 
 enum Client_Item
 {
-	iId,
-	iUniqueId,
-	bool:bSynced,
-	bool:bDeleted,
-	iDateOfPurchase,
-	iDateOfExpiration,
-	iPriceOfPurchase,
+	Client_ItemiId,
+	Client_ItemiUniqueId,
+	bool:Client_ItembSynced,
+	bool:Client_ItembDeleted,
+	Client_ItemiDateOfPurchase,
+	Client_ItemiDateOfExpiration,
+	Client_ItemiPriceOfPurchase,
 }
 
 native Store_RegisterHandler(String:type[], String:uniquekey[], Function:mapstart, Function:reset, Function:config, Function:use, Function:remove, bool:equipable = true, bool:raw = false);

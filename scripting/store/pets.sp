@@ -8,11 +8,11 @@
 
 enum Pet
 {
-	String:model[PLATFORM_MAX_PATH],
-	String:run[64],
-	String:idle[64],
-	Float:fPosition[3],
-	Float:fAngles[3]
+	String:Petmodel[PLATFORM_MAX_PATH],
+	String:Petrun[64],
+	String:Petidle[64],
+	Float:PetfPosition[3],
+	Float:PetfAngles[3]
 }
 
 new g_ePets[STORE_MAX_ITEMS][Pet];
@@ -49,8 +49,8 @@ public Pets_OnMapStart()
 {
 	for(new i=0;i<g_iPets;++i)
 	{
-		PrecacheModel2(g_ePets[i][model], true);
-		Downloader_AddFileToDownloadsTable(g_ePets[i][model]);
+		PrecacheModel2(g_ePets[i][Petmodel], true);
+		Downloader_AddFileToDownloadsTable(g_ePets[i][Petmodel]);
 	}
 }
 
@@ -64,15 +64,15 @@ public Pets_Config(&Handle:kv, itemid)
 	Store_SetDataIndex(itemid, g_iPets);
 	
 	decl Float:m_fTemp[3];
-	KvGetString(kv, "model", g_ePets[g_iPets][model], PLATFORM_MAX_PATH);
-	KvGetString(kv, "idle", g_ePets[g_iPets][idle], 64);
-	KvGetString(kv, "run", g_ePets[g_iPets][run], 64);
+	KvGetString(kv, "model", g_ePets[g_iPets][Petmodel], PLATFORM_MAX_PATH);
+	KvGetString(kv, "idle", g_ePets[g_iPets][Petidle], 64);
+	KvGetString(kv, "run", g_ePets[g_iPets][Petrun], 64);
 	KvGetVector(kv, "position", m_fTemp);
-	g_ePets[g_iPets][fPosition]=m_fTemp;
+	g_ePets[g_iPets][PetfPosition]=m_fTemp;
 	KvGetVector(kv, "angles", m_fTemp);
-	g_ePets[g_iPets][fAngles]=m_fTemp;
+	g_ePets[g_iPets][PetfAngles]=m_fTemp;
 
-	if(!(FileExists(g_ePets[g_iPets][model], true)))
+	if(!(FileExists(g_ePets[g_iPets][Petmodel], true)))
 		return false;
 	
 	++g_iPets;
@@ -151,14 +151,14 @@ public Pets_OnPlayerRunCmd(client, tickcount)
 		dist = GetVectorLength(vec);
 		if(g_unLastAnimation[client] != 1 && dist > 0.0)
 		{
-			SetVariantString(g_ePets[g_unSelectedPet[client]][run]);
+			SetVariantString(g_ePets[g_unSelectedPet[client]][Petrun]);
 			AcceptEntityInput(EntRefToEntIndex(g_unClientPet[client]), "SetAnimation");
 
 			g_unLastAnimation[client]=1;
 		}
 		else if(g_unLastAnimation[client] != 2 && dist == 0.0)
 		{
-			SetVariantString(g_ePets[g_unSelectedPet[client]][idle]);
+			SetVariantString(g_ePets[g_unSelectedPet[client]][Petidle]);
 			AcceptEntityInput(EntRefToEntIndex(g_unClientPet[client]), "SetAnimation");
 			g_unLastAnimation[client]=2;
 		}
@@ -186,12 +186,12 @@ public CreatePet(client)
 		GetClientAbsOrigin(client, m_flClientOrigin);
 		GetClientAbsAngles(client, m_flClientAngles);
 	
-		m_flPosition[0]=g_ePets[m_iData][fPosition][0];
-		m_flPosition[1]=g_ePets[m_iData][fPosition][1];
-		m_flPosition[2]=g_ePets[m_iData][fPosition][2];
-		m_flAngles[0]=g_ePets[m_iData][fAngles][0];
-		m_flAngles[1]=g_ePets[m_iData][fAngles][1];
-		m_flAngles[2]=g_ePets[m_iData][fAngles][2];
+		m_flPosition[0] = g_ePets[m_iData][PetfPosition][0];
+		m_flPosition[1] = g_ePets[m_iData][PetfPosition][1];
+		m_flPosition[2] = g_ePets[m_iData][PetfPosition][2];
+		m_flAngles[0] = g_ePets[m_iData][PetfAngles][0];
+		m_flAngles[1] = g_ePets[m_iData][PetfAngles][1];
+		m_flAngles[2 ]= g_ePets[m_iData][PetfAngles][2];
 
 		decl Float:m_fForward[3];
 		decl Float:m_fRight[3];
@@ -203,7 +203,7 @@ public CreatePet(client)
 		m_flClientOrigin[2] += m_fRight[2]*m_flPosition[0]+m_fForward[2]*m_flPosition[1]+m_fUp[2]*m_flPosition[2];
 		m_flAngles[1] += m_flClientAngles[1];
 
-		DispatchKeyValue(m_unEnt, "model", g_ePets[m_iData][model]);
+		DispatchKeyValue(m_unEnt, "model", g_ePets[m_iData][Petmodel]);
 		DispatchKeyValue(m_unEnt, "spawnflags", "256");
 		DispatchKeyValue(m_unEnt, "solid", "0");
 		SetEntPropEnt(m_unEnt, Prop_Send, "m_hOwnerEntity", client);

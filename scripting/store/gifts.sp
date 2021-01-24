@@ -63,7 +63,7 @@ public Action:Command_Drop(client, args)
 	GetCmdArg(1, m_szTmp, sizeof(m_szTmp));
 	
 	new m_iCredits = StringToInt(m_szTmp);
-	if(g_eClients[client][iCredits]<m_iCredits || m_iCredits<=0)
+	if(g_eClients[client][ClientCredits] < m_iCredits || m_iCredits<=0)
 	{
 		Chat(client, "%t", "Credit Invalid Amount");
 		return Plugin_Handled;
@@ -105,9 +105,9 @@ public bool:Gifts_OnHandler(client, String:info[], itemid)
 		new m_eItem[Store_Item];
 		new m_eHandler[Type_Handler];
 		Store_GetItem(itemid, m_eItem);
-		Store_GetHandler(m_eItem[iHandler], m_eHandler);
+		Store_GetHandler(m_eItem[Store_ItemiHandler], m_eHandler);
 		decl String:m_szTitle[128];
-		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Gift_Drop", m_eItem[szName], m_eHandler[szType]);
+		Format(m_szTitle, sizeof(m_szTitle), "%t", "Confirm_Gift_Drop", m_eItem[Store_ItemName], m_eHandler[szType]);
 		Store_SetClientMenu(client, 2);
 		if(Store_ShouldConfirm())
 			Store_DisplayConfirmMenu(client, m_szTitle, Gifts_MenuHandler, itemid);
@@ -136,9 +136,9 @@ public Gifts_MenuHandler(Handle:menu, MenuAction:action, client, param2)
 
 			new Handle:data = CreateDataPack();
 			WritePackCell(data, param2);
-			WritePackCell(data, output[iDateOfPurchase]);
-			WritePackCell(data, output[iDateOfExpiration]);
-			WritePackCell(data, output[iPriceOfPurchase]);
+			WritePackCell(data, output[Client_ItemiDateOfPurchase]);
+			WritePackCell(data, output[Client_ItemiDateOfExpiration]);
+			WritePackCell(data, output[Client_ItemiPriceOfPurchase]);
 			ResetPack(data);
 
 			Gifts_SpawnGift(Gifts_OnPickUpItem, "", -1.0, pos, _:data, target);
@@ -168,12 +168,12 @@ public Gifts_OnPickUpItem(client, data, owner)
 	new m_eItem[Store_Item];
 	new m_eHandler[Type_Handler];
 	Store_GetItem(itemid, m_eItem);
-	Store_GetHandler(m_eItem[iHandler], m_eHandler);
+	Store_GetHandler(m_eItem[Store_ItemiHandler], m_eHandler);
 
 	Store_GiveItem(client, itemid, purchase, expiration, price);
-	Chat(client, "%t", "Gift Item Picked", m_eItem[szName], m_eHandler[szType]);
+	Chat(client, "%t", "Gift Item Picked", m_eItem[Store_ItemName], m_eHandler[szType]);
 
-	Store_LogMessage(client, 0, "Picked up a gift containing the following item: %s", m_eItem[szName]);
+	Store_LogMessage(client, 0, "Picked up a gift containing the following item: %s", m_eItem[Store_ItemName]);
 }
 
 public Gifts_OnPickUpCredit(client, data, owner)

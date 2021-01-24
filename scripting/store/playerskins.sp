@@ -13,12 +13,12 @@ new bool:g_bZombieMode = false;
 
 enum PlayerSkin
 {
-	String:szModel[PLATFORM_MAX_PATH],
-	String:szArms[PLATFORM_MAX_PATH],
-	iSkin,
-	bool:bTemporary,
-	iTeam,
-	nModelIndex
+	String:PlayerSkinModel[PLATFORM_MAX_PATH],
+	String:PlayerSkinArms[PLATFORM_MAX_PATH],
+	PlayerSkiniSkin,
+	bool:PlayerSkinbTemporary,
+	PlayerSkiniTeam,
+	PlayerSkinnModelIndex
 }
 
 new g_ePlayerSkins[STORE_MAX_ITEMS][PlayerSkin];
@@ -63,7 +63,7 @@ public PlayerSkins_OnPluginStart()
 	HookEvent("player_spawn", PlayerSkins_PlayerSpawn);
 	HookEvent("player_death", PlayerSkins_PlayerDeath);
 
-	g_bZombieMode = (FindPluginByFile("zombiereloaded")==INVALID_HANDLE?false:true);
+	g_bZombieMode = (FindPluginByFile("zombiereloaded") == INVALID_HANDLE ? false:true);
 }
 
 #if defined STANDALONE_BUILD
@@ -78,13 +78,13 @@ public PlayerSkins_OnMapStart()
 {
 	for(new i=0;i<g_iPlayerSkins;++i)
 	{
-		g_ePlayerSkins[i][nModelIndex] = PrecacheModel2(g_ePlayerSkins[i][szModel], true);
-		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][szModel]);
+		g_ePlayerSkins[i][PlayerSkinnModelIndex] = PrecacheModel2(g_ePlayerSkins[i][PlayerSkinModel], true);
+		Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][PlayerSkinModel]);
 
-		if(g_ePlayerSkins[i][szArms][0]!=0)
+		if(g_ePlayerSkins[i][PlayerSkinArms][0]!=0)
 		{
-			PrecacheModel2(g_ePlayerSkins[i][szArms], true);
-			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][szArms]);
+			PrecacheModel2(g_ePlayerSkins[i][PlayerSkinArms], true);
+			Downloader_AddFileToDownloadsTable(g_ePlayerSkins[i][PlayerSkinArms]);
 		}
 	}
 
@@ -135,13 +135,13 @@ public PlayerSkins_Config(&Handle:kv, itemid)
 {
 	Store_SetDataIndex(itemid, g_iPlayerSkins);
 	
-	KvGetString(kv, "model", g_ePlayerSkins[g_iPlayerSkins][szModel], PLATFORM_MAX_PATH);
-	KvGetString(kv, "arms", g_ePlayerSkins[g_iPlayerSkins][szArms], PLATFORM_MAX_PATH);
-	g_ePlayerSkins[g_iPlayerSkins][iSkin] = KvGetNum(kv, "skin");
-	g_ePlayerSkins[g_iPlayerSkins][iTeam] = KvGetNum(kv, "team");
-	g_ePlayerSkins[g_iPlayerSkins][bTemporary] = (KvGetNum(kv, "temporary")?true:false);
+	KvGetString(kv, "model", g_ePlayerSkins[g_iPlayerSkins][PlayerSkinModel], PLATFORM_MAX_PATH);
+	KvGetString(kv, "arms", g_ePlayerSkins[g_iPlayerSkins][PlayerSkinArms], PLATFORM_MAX_PATH);
+	g_ePlayerSkins[g_iPlayerSkins][PlayerSkiniSkin] = KvGetNum(kv, "skin");
+	g_ePlayerSkins[g_iPlayerSkins][PlayerSkiniTeam] = KvGetNum(kv, "team");
+	g_ePlayerSkins[g_iPlayerSkins][PlayerSkinbTemporary] = (KvGetNum(kv, "temporary")?true:false);
 	
-	if(FileExists(g_ePlayerSkins[g_iPlayerSkins][szModel], true))
+	if(FileExists(g_ePlayerSkins[g_iPlayerSkins][PlayerSkinModel], true))
 	{
 		++g_iPlayerSkins;
 		return true;
@@ -153,30 +153,30 @@ public PlayerSkins_Config(&Handle:kv, itemid)
 public PlayerSkins_Equip(client, id)
 {
 	new m_iData = Store_GetDataIndex(id);
-	if(g_eCvars[g_cvarSkinChangeInstant][aCache] && IsPlayerAlive(client) && GetClientTeam(client)==g_ePlayerSkins[m_iData][iTeam])
+	if(g_eCvars[g_cvarSkinChangeInstant][aCache] && IsPlayerAlive(client) && GetClientTeam(client)==g_ePlayerSkins[m_iData][PlayerSkiniTeam])
 	{
 		
-		Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin]);
+		Store_SetClientModel(client, g_ePlayerSkins[m_iData][PlayerSkinModel], g_ePlayerSkins[m_iData][PlayerSkiniSkin]);
 	}
 	else
 	{
 		if(Store_IsClientLoaded(client))
 			Chat(client, "%t", "PlayerSkins Settings Changed");
 
-		if(g_ePlayerSkins[m_iData][bTemporary])
+		if(g_ePlayerSkins[m_iData][PlayerSkinbTemporary])
 		{
 			g_iTempSkins[client] = m_iData;
 			return -1;
 		}
 	}
-	return g_ePlayerSkins[Store_GetDataIndex(id)][iTeam]-2;
+	return g_ePlayerSkins[Store_GetDataIndex(id)][PlayerSkiniTeam]-2;
 }
 
 public PlayerSkins_Remove(client, id)
 {
 	if(Store_IsClientLoaded(client) && !g_eCvars[g_cvarSkinChangeInstant][aCache])
 		Chat(client, "%t", "PlayerSkins Settings Changed");
-	return g_ePlayerSkins[Store_GetDataIndex(id)][iTeam]-2;
+	return g_ePlayerSkins[Store_GetDataIndex(id)][PlayerSkiniTeam]-2;
 }
 
 public Action:PlayerSkins_PlayerSpawn(Handle:event,const String:name[],bool:dontBroadcast)
@@ -214,7 +214,7 @@ public Action:PlayerSkins_PlayerSpawnPost(Handle:timer, any:userid)
 			m_iData = g_iTempSkins[client];
 		else
 			m_iData = Store_GetDataIndex(m_iEquipped);
-		Store_SetClientModel(client, g_ePlayerSkins[m_iData][szModel], g_ePlayerSkins[m_iData][iSkin], g_ePlayerSkins[m_iData][szArms]);
+		Store_SetClientModel(client, g_ePlayerSkins[m_iData][PlayerSkinModel], g_ePlayerSkins[m_iData][PlayerSkiniSkin], g_ePlayerSkins[m_iData][PlayerSkinArms]);
 	}
 	else if(g_eCvars[g_cvarSkinForceChange][aCache])
 	{
