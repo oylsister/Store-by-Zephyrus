@@ -7,7 +7,7 @@
 #define PLUGIN_NAME "Store - The Resurrection"
 #define PLUGIN_AUTHOR "Zephyrus, Updated by Oylsister"
 #define PLUGIN_DESCRIPTION "A completely new Store system."
-#define PLUGIN_VERSION "1.3.1"
+#define PLUGIN_VERSION "1.3.2"
 #define PLUGIN_URL ""
 
 #define SERVER_LOCK_IP ""
@@ -35,6 +35,7 @@
 #include <scp>
 #include <thirdperson>
 #include <saxtonhale>
+#include <hitboxchanger>
 #endif
 
 //////////////////////////////
